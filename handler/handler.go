@@ -67,6 +67,20 @@ func (h *Handler) PostCityHandler(c echo.Context) error {
 	return c.JSON(http.StatusCreated, city)
 }
 
+func (h *Handler) GetAllCityHandler(c echo.Context) error {
+	var cities []City
+	err := h.db.Select(&cities, "SELECT * FROM city")
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return c.NoContent(http.StatusNotFound)
+		}
+		log.Printf("failed to get city data: %s\n", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.JSON(http.StatusOK, cities)
+}
+
 type LoginRequestBody struct {
 	Username string `json:"username,omitempty" form:"username"`
 	Password string `json:"password,omitempty" form:"password"`
@@ -182,6 +196,6 @@ type Me struct {
 
 func GetMeHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, Me{
-		Username: c.Get("username").(string),
+		Username: c.Get("userName").(string),
 	})
 }
