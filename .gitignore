@@ -21,3 +21,5 @@
 go.work
 
 .tool-versions
+.env
+.idea/
